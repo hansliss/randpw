@@ -1,11 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <crypt.h>
+#include <time.h>
+
 #include "randpw.h"
 
 void usage(char *progname)
 {
-  fprintf(stderr, "Usage: %s [-n <count>] [-c (cleartext)]\n", progname);
+  fprintf(stderr, "Usage: %s [-n <count>] [-c (do not obfuscate)] [-e (encrypt)] [-t <ct password>]\n", progname);
+}
+
+void ppw(char *pw, int encrypt)
+{
+  char salt[3];
+  if (encrypt)
+    {
+      salt[0]=rand()%26+'A';
+      salt[1]=rand()%26+'A';
+      salt[2]='\0';
+      printf("%s:%s\n", pw, crypt(pw, salt));
+    }
+  else
+    printf("%s\n", pw);
 }
 
 int main(int argc, char *argv[])
@@ -13,8 +30,9 @@ int main(int argc, char *argv[])
   int i=1;
   int o;
   int munge=1;
+  int encrypt=0;
   static char tmpbuf[8192];
-  while ((o=getopt(argc, argv, "n:c"))!=-1)
+  while ((o=getopt(argc, argv, "n:cet:"))!=-1)
     {
       switch (o)
 	{
@@ -23,6 +41,15 @@ int main(int argc, char *argv[])
 	  break;
 	case 'c':
 	  munge=0;
+	  break;
+	case 'e':
+	  encrypt=1;
+	  srand(time(NULL));
+	  break;
+	case 't':
+	  ppw(optarg, encrypt);
+	  if (i==1)
+	    i=0;
 	  break;
 	default:
 	  usage(argv[0]);
@@ -40,7 +67,7 @@ int main(int argc, char *argv[])
       while (!randpw(tmpbuf));
       if (munge)
 	mungepw(tmpbuf);
-      printf("%s\n", tmpbuf);
+      ppw(tmpbuf, encrypt);
     }
   return 0;
 }
