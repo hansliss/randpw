@@ -8,7 +8,7 @@
 
 void usage(char *progname)
 {
-  fprintf(stderr, "Usage: %s [-n <count>] [-c (do not obfuscate)] [-e (encrypt)] [-t <ct password>]\n", progname);
+  fprintf(stderr, "Usage: %s [-n <count>] [-c (do not obfuscate)] [-e (encrypt)] [-t <ct password>] [<ct password> ...]\n", progname);
 }
 
 void ppw(char *pw, int encrypt)
@@ -59,8 +59,10 @@ int main(int argc, char *argv[])
     }
   if (optind < argc)
     {
-      usage(argv[0]);
-      return -1;
+      if (i==1)
+	i=0;
+      while (optind < argc)
+	ppw(argv[optind++], encrypt);
     }
   while (i--)
     {
