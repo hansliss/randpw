@@ -1,0 +1,4 @@
+A password generator using a Markov Chain technique to produce word-like passwords
+
+Put some different text in textbase.txt and rebuild to produce different-looking passwords.
+

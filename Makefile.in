@@ -18,13 +18,22 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
 mandir = @mandir@
+datarootdir = @datarootdir@
 
 DISTFILES =
 
 TARGET=randpw
 SOURCES=main.c randpw.c nomes.c
+HEADER=nomes.h randpw.h
 OBJS=main.o randpw.o nomes.o
 LIB_OBJS=
+
+MAKENOMESC=make_nomes_c
+MAKENOMESCSRC=make_nomes_c.c
+MAKENOMESCOBJ=make_nomes_c.o
+
+DISTSRC=aclocal.m4 config.h.in configure configure.in install-sh main.c Makefile.in make_nomes_c.c mkinstalldirs nomes.h randpw.c randpw.h textbase.txt README
+DISTBIN=$(TARGET) README
 
 all: $(TARGET)
 
@@ -37,10 +46,15 @@ install: all
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LIBS)
 
-$(OBJS): $(SOURCES)
+nomes.c: make_nomes_c textbase.txt
+	./make_nomes_c < textbase.txt
+
+%.o: %.c $(HEADERS)
+	@echo Compiling $<...
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	/bin/rm -f $(TARGET) *.o core
+	/bin/rm -f $(TARGET) make_nomes_c nomes.c *.o core $(PRODUCT)-$(VERSION)-*.tar.gz*
 
 distclean: clean config-clean
 
@@ -54,6 +68,12 @@ cfg-clean:
 mostlyclean: clean
 
 maintainer-clean: clean
+
+package: all
+	tar czf $(PRODUCT)-$(VERSION)-bin.tar.gz $(DISTBIN)
+	md5sum $(PRODUCT)-$(VERSION)-bin.tar.gz > $(PRODUCT)-$(VERSION)-bin.tar.gz.md5
+	tar czf $(PRODUCT)-$(VERSION)-src.tar.gz $(DISTSRC)
+	md5sum $(PRODUCT)-$(VERSION)-src.tar.gz > $(PRODUCT)-$(VERSION)-src.tar.gz.md5
 
 # automatic re-running of configure if the configure.in file has changed
 ${srcdir}/configure: configure.in 
