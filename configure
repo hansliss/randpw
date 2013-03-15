@@ -1860,7 +1860,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 PRODUCT=randpw
-VERSION=1.1-SNAPSHOT
+VERSION=1.2
 ac_config_headers="$ac_config_headers config.h"
 
 ac_ext=c
