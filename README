@@ -1,4 +1,6 @@
 A password generator using a Markov Chain technique to produce word-like passwords
 
-Put some different text in textbase.txt and rebuild to produce different-looking passwords.
+If you are going to use this for anything serious, you need to rebuild from source, with your own dictionary.
+Put a body of your favourite text in textbase.txt and rebuild.
+
 
